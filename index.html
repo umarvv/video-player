@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Player</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #121212;
+        color: white;
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .player {
+        width: 90%;
+        max-width: 800px;
+        background: #1e1e1e;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      }
+
+      video {
+        width: 100%;
+        border-bottom: 2px solid #333;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: center;
+        padding: 1rem;
+        gap: 10px;
+      }
+
+      .controls button,
+      .controls input[type="range"] {
+        background: #222;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        padding: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .controls button:hover {
+        background: #444;
+      }
+
+      .range {
+        flex: 1;
+        height: 4px;
+        appearance: none;
+        background: #555;
+        outline: none;
+        border-radius: 5px;
+      }
+
+      .range::-webkit-slider-thumb {
+        appearance: none;
+        width: 10px;
+        height: 10px;
+        background: white;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .dark-toggle {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #333;
+        padding: 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .dark-toggle:hover {
+        background: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="player">
+      <video id="video" preload="metadata">
+        <source src="" type="video/mp4" />
+        Your browser does not support video.
+      </video>
+      <div class="controls">
+        <button id="playPause"><i class="fas fa-play"></i></button>
+        <button id="rewind"><i class="fas fa-backward"></i></button>
+        <button id="forward"><i class="fas fa-forward"></i></button>
+        <input type="range" id="progress" class="range" value="0" />
+        <input
+          type="range"
+          id="volume"
+          class="range"
+          min="0"
+          max="1"
+          step="0.05"
+          value="1"
+        />
+        <button id="fullscreen"><i class="fas fa-expand"></i></button>
+        <input type="file" id="loadVideo" accept="video/mp4" />
+      </div>
+    </div>
+
+    <script>
+      const video = document.getElementById("video");
+      const playPause = document.getElementById("playPause");
+      const rewind = document.getElementById("rewind");
+      const forward = document.getElementById("forward");
+      const progress = document.getElementById("progress");
+      const volume = document.getElementById("volume");
+      const fullscreen = document.getElementById("fullscreen");
+      const loadVideo = document.getElementById("loadVideo");
+
+      playPause.addEventListener("click", () => {
+        if (video.paused) {
+          video.play();
+          playPause.innerHTML = '<i class="fas fa-pause"></i>';
+        } else {
+          video.pause();
+          playPause.innerHTML = '<i class="fas fa-play"></i>';
+        }
+      });
+
+      rewind.addEventListener("click", () => {
+        video.currentTime -= 10;
+      });
+
+      forward.addEventListener("click", () => {
+        video.currentTime += 10;
+      });
+
+      volume.addEventListener("input", () => {
+        video.volume = volume.value;
+      });
+
+      fullscreen.addEventListener("click", () => {
+        if (video.requestFullscreen) {
+          video.requestFullscreen();
+        }
+      });
+
+      video.addEventListener("timeupdate", () => {
+        progress.value = (video.currentTime / video.duration) * 100;
+      });
+
+      progress.addEventListener("input", () => {
+        const time = (progress.value / 100) * video.duration;
+        video.currentTime = time;
+      });
+
+      loadVideo.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const url = URL.createObjectURL(file);
+          video.src = url;
+          video.load();
+          video.play();
+          playPause.innerHTML = '<i class="fas fa-pause"></i>';
+        }
+      });
+    </script>
+  </body>
+</html>
